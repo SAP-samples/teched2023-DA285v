@@ -1,4 +1,4 @@
-# Level 1 Heading
+# Working with the SAP HANA Cloud JSON Document Store
 
 In this exercise, you will...
 
@@ -10,15 +10,53 @@ After completing these steps you will have....
 <br>![](/exercises/ex0/images/00_00_0010.png)
 
 2.	Insert this code.
-``` abap
- DATA(params) = request->get_form_fields(  ).
- READ TABLE params REFERENCE INTO DATA(param) WITH KEY name = 'cmd'.
-  IF sy-subrc <> 0.
-    response->set_status( i_code = 400
-                     i_reason = 'Bad request').
-    RETURN.
-  ENDIF.
-```
+``` SQL
+/********************************/
+-- Unit 2 Manage JSON
+/********************************/
+-- We have imported OSM street network and POIs via python/overpass into a collection
+
+
+/********************************/
+-- ROAD NETWORK
+/********************************/
+-- Query COLLECTION
+SELECT * FROM "HANA10"."C_STREET_NETWORK" WHERE "type" = 'node' LIMIT 10;
+SELECT * FROM "HANA10"."C_STREET_NETWORK" WHERE "type" = 'way' LIMIT 10;
+
+SELECT "type", COUNT(*) AS C 
+	FROM "HANA10"."C_STREET_NETWORK" 
+	GROUP BY "type";
+
+SELECT "type", "tags"."highway", COUNT(*) AS C 
+	FROM "HANA10"."C_STREET_NETWORK" 
+	GROUP BY "type", "tags"."highway" 
+	ORDER BY C DESC;
+
+-- The "ways" contain an array of "nodes", e.g. "nodes": [99549558,1029814722,8502705960,1700923338]
+-- We can unnest this array.
+-- We will later use unnesting to create a graph from the street network
+SELECT "type", "id", "tags"."name", NODE 
+	FROM "HANA10"."C_STREET_NETWORK"
+	UNNEST "nodes" AS NODE
+	WHERE "type" = 'way' LIMIT 100;
+
+
+
+/********************************/
+-- POIS
+/********************************/
+SELECT COUNT(*) FROM "HANA10"."C_POIS";
+
+SELECT * FROM "HANA10"."C_POIS" LIMIT 10;
+
+SELECT "tags" FROM "HANA10"."C_POIS" LIMIT 10;
+
+SELECT "tags"."amenity", COUNT(*) AS C 
+	FROM "HANA10"."C_POIS" 
+	GROUP BY "tags"."amenity" 
+	ORDER BY C DESC;
+  ```
 
 ## Summary
 
