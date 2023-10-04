@@ -1,8 +1,9 @@
-# Exercise 2 - Exercise 2 Description
+# Exercise 2 - Working with Spatial Data
 
-In this exercise, we will create...
+In this exercise, we will analyse building structures and charging stations.
+Load data first...
 
-## Exercise 2.1 Sub Exercise 1 Description
+## Exercise 2.1 Basic analysis of charging stations point data
 
 After completing these steps you will have created...
 
@@ -10,26 +11,19 @@ After completing these steps you will have created...
 <br>![](/exercises/ex2/images/02_01_0010.png)
 
 2.	Insert this line of code.
-```abap
-response->set_text( |Hello ABAP World! | ). 
+```sql
+SELECT * FROM DUMMY;
 ```
 
 
 
-## Exercise 2.2 Sub Exercise 2 Description
+## Exercise 2.2 Analysis of building structures data
 
 After completing these steps you will have...
 
 1.	Enter this code.
-```abap
-DATA(lt_params) = request->get_form_fields(  ).
-READ TABLE lt_params REFERENCE INTO DATA(lr_params) WITH KEY name = 'cmd'.
-  IF sy-subrc = 0.
-    response->set_status( i_code = 200
-                     i_reason = 'Everything is fine').
-    RETURN.
-  ENDIF.
-
+```sql
+SELECT * FROM DUMMY;
 ```
 
 2.	Click here.
@@ -39,4 +33,4 @@ READ TABLE lt_params REFERENCE INTO DATA(lr_params) WITH KEY name = 'cmd'.
 
 You've now ...
 
-Continue to - [Exercise 3 - Excercise 3 ](../ex3/README.md)
+Continue to - [Exercise 3 - Analyze networks ](../ex3/README.md)
