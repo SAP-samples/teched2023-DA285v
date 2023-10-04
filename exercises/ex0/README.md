@@ -9,7 +9,7 @@ describe and link evcs demo
 
 ## Working with the Exercise Scripts
 
-not sure if anything needs to be mentioned
+In each exercise folder, there is a script. Data is in the data folder.
 
 You will find **file paths** in code. Depending on your environment the actual file path will vary based on location and OS type.
 
