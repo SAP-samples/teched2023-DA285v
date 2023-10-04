@@ -1,7 +1,7 @@
 # Exercise 3 - Analyze Networks
 
 In this exercise, we will create a graph from the street network data.
-Either data has been loaded in ex 1 or you upload table.
+Either the street network data data has been loaded in ex 1 or you upload the table.
 
 ## Exercise 2.1 Create a Graph from OSM Street Network Data
 

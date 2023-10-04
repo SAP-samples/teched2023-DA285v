@@ -1,7 +1,7 @@
 # Exercise 2 - Working with Spatial Data
 
 In this exercise, we will analyse building structures and charging stations.
-Load data first...
+Load data first, the two table for CS and BS...
 
 ## Exercise 2.1 Basic analysis of charging stations point data
 
