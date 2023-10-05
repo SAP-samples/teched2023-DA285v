@@ -7,13 +7,6 @@ Load data first, the two table for CS and BS...
 
 After completing these steps you will have created...
 
-1. Click here.
-<br>![](/exercises/ex2/images/02_01_0010.png)
-
-2.	Insert this line of code.
-```sql
-SELECT * FROM DUMMY;
-```
 
 
 
@@ -33,4 +26,4 @@ SELECT * FROM DUMMY;
 
 You've now ...
 
-Continue to - [Exercise 3 - Analyze networks ](../ex3/README.md)
+Continue to - [Exercise 3 - Analyze Networks](../ex3/README.md)

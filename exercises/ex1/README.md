@@ -5,7 +5,7 @@ This exercise is optional. It requires a Python environment and SAP HANA Cloud s
 In this exercise, we will use the SAP HANA Cloud JSON Document Store and the [Python machine learning client for SAP HANA](https://pypi.org/project/hana-ml/) (hana-ml) to retrieve street network data from [OpenStreetMap](https://www.openstreetmap.org) and store JSON data in the database.
 
 
-## Exercise 1.1 Importing OpenStreetMap Street Network Data
+## Exercise 1.1 Importing OpenStreetMap Street Network Data<a name="11"></a>
 
 First of all, create a new schema "DAT285" in your database, e.g. using the SAP HANA Database Explorer.
 ```SQL
@@ -79,9 +79,9 @@ coll = create_collection_from_elements(
     )
 ```
 
-## Exercise 1.2 Inspect, Query, and Transform JSON Data
+## Exercise 1.2 Inspect, Query, and Transform JSON Data<a name="12"></a>
 
-Let's switch back to the Database Explorer and inspect the street network collection: right-click the `C_STREET_NETWORK` collectionand select view "view JSON".
+Let's switch back to the Database Explorer and inspect the street network collection: right-click the `C_STREET_NETWORK` collection and select view "view JSON".
 
 ![](images/json.png)
 
