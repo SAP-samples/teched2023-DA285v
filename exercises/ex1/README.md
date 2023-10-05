@@ -81,13 +81,105 @@ coll = create_collection_from_elements(
 
 ## Exercise 1.2 Inspect, Query, and Transform JSON Data
 
-Let's switch back to the Database Explorer and inspect the street network collection.
+Let's switch back to the Database Explorer and inspect the street network collection: right-click the `C_STREET_NETWORK` collectionand select view "view JSON".
 
 ![](images/json.png)
 
+We can use SQL to query the collection.
+
+```SQL
+-- Inspect the collection
+SELECT * FROM "DAT285"."C_STREET_NETWORK";
+
+SELECT "type", COUNT(*) AS C 
+	FROM "DAT285"."C_STREET_NETWORK" 
+	GROUP BY "type";
+
+-- There are "way"s and "node"s in the data: street segments and street junctions
+SELECT * FROM "DAT285"."C_STREET_NETWORK" WHERE "type" = 'node' LIMIT 10;
+SELECT * FROM "DAT285"."C_STREET_NETWORK" WHERE "type" = 'way' LIMIT 10;
+
+-- Use the object style/dot notation to query
+SELECT "type", "tags"."highway", COUNT(*) AS C 
+	FROM "DAT285"."C_STREET_NETWORK" 
+	GROUP BY "type", "tags"."highway" 
+	ORDER BY C DESC;
+
+-- The "ways" contain an array of "nodes", e.g. "nodes": [99549558,1029814722,8502705960,1700923338]
+-- We can unnest this array.
+SELECT "type", "id", "tags"."name", NODE 
+	FROM "DAT285"."C_STREET_NETWORK"
+	UNNEST "nodes" AS NODE
+	WHERE "type" = 'way'
+	LIMIT 100;
+```
+
+Next, we will extract the nodes and ways from the JSON collection and populate three tables: `STREET_NETWORK_VERTICES`, `STREET_NETWORK_WAYS`, and `STREET_NETWORK_WAY_NODES`. These tables will be used in exercise 3 to run network analysis using the SAP HANA Cloud Graph Engine.
+
+```SQL
+/********************************/
+-- Let's copy the nodes and the ways documents into tables and create point geometries from lon/lat values.
+/********************************/
+-- Nodes
+CREATE TABLE "DAT285"."STREET_NETWORK_VERTICES" (
+	"NODE_ID" BIGINT PRIMARY KEY,
+	"TYPE" NVARCHAR(10),
+	"POINT_4326" ST_GEOMETRY(4326),
+	"POINT_3857" ST_GEOMETRY(3857)
+);
+INSERT INTO "DAT285"."STREET_NETWORK_VERTICES"
+	SELECT TO_BIGINT("id") AS "NODE_ID", "type" AS "TYPE", 
+		NEW ST_POINT("lon", "lat", 4326) AS "POINT_4326",
+		NEW ST_POINT("lon", "lat", 4326).ST_TRANSFORM(3857) AS "POINT_3857"
+	FROM "DAT285"."C_STREET_NETWORK" WHERE "type" = 'node'
+;
+SELECT * FROM "DAT285"."STREET_NETWORK_VERTICES";
+```
+You can double-click on a value in the spatial columns to bring up a map.
+
+![](images/spatial1.png)
+
+We'll flatten some values of the "tags" structure into the `STREET_NETWORK_WAYS` table.
+```SQL
+/********************************/
+-- Ways
+CREATE TABLE "DAT285"."STREET_NETWORK_WAYS" AS (	
+	SELECT TO_BIGINT("id") AS "WAY_ID", "type" AS "TYPE", "tags"."highway" AS "HW", 
+		"tags"."name" AS "NAME", "tags"."oneway" AS "ONEWAY", "tags"."maxspeed" AS MAXSPEED 
+	FROM "DAT285"."C_STREET_NETWORK" 
+	WHERE "type" = 'way' AND "tags"."highway" IS NOT NULL
+);
+SELECT * FROM "DAT285"."STREET_NETWORK_WAYS";
+```
+
+![](images/spatial2.png)
+
+At last, we will `UNNEST` th sequence of nodes of a way.
+
+```SQL
+/********************************/
+-- And table for the sequence of waypoints of a way
+CREATE COLUMN TABLE "DAT285"."STREET_NETWORK_WAY_NODES"(
+	"WAY_ID" BIGINT,
+	"NODE_ID" BIGINT,
+	"RN" BIGINT GENERATED ALWAYS AS IDENTITY
+);
+INSERT INTO "DAT285"."STREET_NETWORK_WAY_NODES" ("WAY_ID", "NODE_ID")
+	SELECT TO_BIGINT("id") AS "WAY_ID", TO_BIGINT(NODE) AS "NODE_ID" 
+	FROM "DAT285"."C_STREET_NETWORK"
+	UNNEST "nodes" AS NODE
+	WHERE "type" = 'way' AND "tags"."highway" IS NOT NULL
+;
+SELECT * FROM "DAT285"."STREET_NETWORK_WAY_NODES" ORDER BY "WAY_ID", "RN";
+```
+
+This gives us a table with an ordered set of nodes which make up a way.
+
+![](images/spatial3.png)
+
 ## Summary
 
-You've now loaded OSM Street Network data into the SAP HANA Cloud JSON Document Store
+You've retieved street network data from OSM using python, stored the data in a JSON collection, and transformed the data using SQL into relational tables.
 
-Continue to - [Exercise 2 - Spatial](../ex2/README.md)
+Continue to - [Exercise 2 - Work with Spatial Data](../ex2/README.md)
 
