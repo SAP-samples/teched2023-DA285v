@@ -4,7 +4,7 @@
 
 ## Description
 
-This repository contains the material for the SAP TechEd 2023 session called DAT185v - Building Intelligent Data Applications with SAP HANA Cloud.  
+This repository contains the material for the SAP TechEd 2023 session DAT185v - Building Intelligent Data Applications with SAP HANA Cloud.  
 
 ## Overview
 
@@ -13,13 +13,11 @@ This session introduces SAP HANA Cloud Multi-Model capabilities - Document Store
 ## Requirements
 
 The requirements to follow the exercises in this repository are
-<li>SAP HANA Cloud (trial edition works for)
+<li>SAP HANA Cloud (SAP HANA Cloud free tier or trial will work for for exercises 2 + 3 only)
 <li>SAP HANA Database Explorer (or DBeaver)
 <li>QGIS (optionally)
 
 ## Exercises
-
-
 
 - [Getting Started](exercises/ex0/)
 - [Exercise 1 - Manage JSON Data](exercises/ex1/)

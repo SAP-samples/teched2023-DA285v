@@ -1,39 +1,45 @@
 # Getting Started
 
-This section should give you an understanding of the base scenario and data. Additionally, we will describe the SAP HANA Cloud Trial setup in case you want to run the exercises yourself. As we will process the data using SQL, the SQL editor of SAP HANA Database Explorer (DBX) is sufficient from a tooling perspective. However, for the "full experience" we recommend DBeaver, QGIS (or Esri ArcGIS Pro) for spatial data, and Python/Jupyter notebooks to work with the SAP HANA client API for machine learning (hana-ml). At the end of this section, you will find links to additional information on SAP HANA Cloud Multi-Model.
+This section should give you an understanding of the base scenario and data. Additionally, we will describe the SAP HANA Cloud free tier or trial setup in case you want to run the exercises yourself. As we will process the data using SQL, the SQL editor of SAP HANA Database Explorer (DBX) is sufficient from a tooling perspective. However, for the "full experience" we recommend DBeaver, QGIS (or Esri ArcGIS Pro) for spatial data, and Python/Jupyter Notebooks to work with the SAP HANA client API for machine learning (hana-ml). At the end of this section, you will find links to additional information on SAP HANA Cloud Multi-Model.
 
-## Base Data & Demo Scenario<a name="subex1"></a>
 
-work with struct, evcs, and network
-describe and link evcs demo
+## Base Data & Demo Scenario
+
+During the exercises, we will work with data describing building structures, electric vehicle charging stations, and the road network in the Orlando, Florida area. We will walk through some building blocks that make of the "EV Charging Stations site Selection" demo.
+For a detailed description and videos of the demo scenario, please see the blog post [Optimal Electric Vehicle Charging Station Placement – An Intelligent Data Application Demo](https://blogs.sap.com/2023/05/15/optimal-electronic-vehicle-charging-station-placement-an-intelligent-data-application-demo/).
+
+![](images/demo_screenshot.png)
+
 
 ## Working with the Exercise Scripts
 
-In each exercise folder, there is a script. Data is in the data folder.
+For each exercise, there is a detailed description of the SQL commands and processing steps. A condensed version, i.e. the code only, can also be found in each of the exercises' folder. YOu can simply copy or open the code into a SQL editor (SAP HANA Cloud Database Explorer or DBeaver) and execut. The required data in form of SAP HANA database table export is located in the [data folder](../../data/) of this repository. See [Import Data into SAP HANA Cloud, SAP HANA Database](https://developers.sap.com/tutorials/hana-cloud-mission-trial-5.html) to learn how to upload the data.
 
-You will find **file paths** in code. Depending on your environment the actual file path will vary based on location and OS type.
 
-## SAP HANA Cloud Trial setup<a name="subex2"></a>
+## SAP HANA Cloud Free Tier or Trial setup
 
-Exercises 2 and 3 can be run on a free SAP HANA Cloud Trial system. To get one, visit [SAP HANA Cloud Trial home](https://www.sap.com/cmp/td/sap-hana-cloud-trial.html). To run the optional exercises 1 (work with JSON data using the Document Store) and 2 (machine learning), you will need a full SAP HANA Cloud. Make sure to enable the **Script Server** and **Document Store**. Refer to [SAP HANA Cloud Administration with SAP HANA Cloud Central](https://help.sap.com/viewer/9ae9104a46f74a6583ce5182e7fb20cb/hanacloud/en-US/e379ccd3475643e4895b526296235241.html) for details.
+Exercises 2 and 3 can be run on a SAP HANA Cloud free tier or trial system. For instructions how to set up, I recommend the tutorial [Jump Start Your SAP HANA Cloud, SAP HANA Database (free tier or trial)](https://developers.sap.com/mission.hana-cloud-database-get-started.html). To run the optional exercises 1 (Manage JSON data using the Document Store) and 2 (Utilizing machine learning), you will need a SAP HANA Cloud with more memory/vCPU assigned. Make sure to enable the **Script Server** and **Document Store**. Refer to
+* [SAP HANA Database Additional Features](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/sap-hana-database-additional-features) and
+* [Create an SAP HANA Database Instance Using SAP HANA Cloud Central](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/create-sap-hana-database-instance-using-sap-hana-cloud-central) for in general.
 
-The HANA database user for exercise 4 (machine learning) requires some roles and privileges
-* Roles `AFL__SYS_AFL_AFLPAL_EXECUTE` and `AFL__SYS_AFL_AFLPAL_EXECUTE_WITH_GRANT_OPTION` to execute PAL algorithms
-* System privileges `IMPORT` to run data uploads
+The HANA database user for exercise 4 (Utilize machine learning) requires additional privileges
+* role `AFL__SYS_AFL_AFLPAL_EXECUTE` and 
+* role `AFL__SYS_AFL_AFLPAL_EXECUTE_WITH_GRANT_OPTION` to execute PAL algorithms
 
-## DBeaver, QGIS, GDAL, hana-ml, Cytoscape<a name="subex3"></a>
 
-The SAP HANA Database Explorer provides an SQL editor, table viewer and data analysis tools, and a simple graph viewer. For a "full experience" we recommend the following tools in addition.
+## DBeaver, QGIS, GDAL, hana-ml, Cytoscape
+
+The **SAP HANA Database Explorer** provides an SQL editor, table viewer, and data analysis tools. See [Tools to Manage and Access the SAP HANA Cloud, SAP HANA Database](https://developers.sap.com/tutorials/hana-cloud-mission-trial-4.html) to learn how to access SAP HANA Cloud Database Explorer. For a "full experience" we recommend the following tools in addition.
 
 **DBeaver**<br>an open source database administration and development tool. You can run the exercise scripts in DBeaver and get simple spatial visualizations. See Mathias Kemeter's blog for [installation instructions](https://blogs.sap.com/2020/01/08/good-things-come-together-dbeaver-sap-hana-spatial-beer/).
 
 **QGIS**<br>an open source Geographical Information System (GIS). QGIS can connect to SAP HANA and provides great tools for advanced maps. Again, read Mathias' blog to [get it up and running](https://blogs.sap.com/2021/03/01/creating-a-playground-for-spatial-analytics/).
 
-**hana-ml**, hte Jupyter Notebook to load JSON data into the document store uses the python machine learning client for SAP HANA. There is a lot more in hana-ml for the data scientist - see [pypi.org](https://pypi.org/project/hana-ml/) and [hana-ml reference](https://help.sap.com/doc/1d0ebfe5e8dd44d09606814d83308d4b/latest/en-US/index.html). More detailed guidance on the Python environment setup is given in [Prepare your Python environment](/exercises/ex9_appendix/README.md#appA-sub1)
+**hana-ml**, the Jupyter Notebook to load JSON data into the document store (exercise 1) uses the python machine learning client for SAP HANA. There is a lot more in hana-ml for the data scientist - see [pypi.org](https://pypi.org/project/hana-ml/) and [hana-ml reference](https://help.sap.com/doc/1d0ebfe5e8dd44d09606814d83308d4b/latest/en-US/index.html).
 
 
 
-##  Background Material<a name="subex4"></a>
+##  Background Material
 
 [SAP HANA Spatial Resources](https://blogs.sap.com/2020/11/02/sap-hana-spatial-resources-reloaded/)<br>
 [SAP HANA Graph Resources](https://blogs.sap.com/2021/07/21/sap-hana-graph-resources/)<br>
@@ -41,6 +47,6 @@ The SAP HANA Database Explorer provides an SQL editor, table viewer and data ana
 
 ## Summary
 
-You are all set...
+You are all set.
 
-Continue to - [Exercise 1 - json](../ex1/README.md)
+Continue to - [Exercise 1 - Manage JSON Data](../ex1/README.md)
