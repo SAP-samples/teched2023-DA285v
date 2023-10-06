@@ -15,10 +15,17 @@ For a detailed description and videos of the demo scenario, please see the blog 
 
 For each exercise, there is a detailed description of the SQL commands and processing steps. A condensed version, i.e. the code only, can also be found in each of the exercises' folder. YOu can simply copy or open the code into a SQL editor (SAP HANA Cloud Database Explorer or DBeaver) and execut. The required data in form of SAP HANA database table export is located in the [data folder](../../data/) of this repository. See [Import Data into SAP HANA Cloud, SAP HANA Database](https://developers.sap.com/tutorials/hana-cloud-mission-trial-5.html) to learn how to upload the data.
 
+Since, exercises 1 and 4 cannot be successfully completed on the SAP HANA Cloud free trial version(refer to next section for more details), to compensate the fact of not being able to download and work with json document, we hereby provide an option for the participants to import the 'STREET_NETWORK.tar.gz' dirently into their free trial instance. By doing this, you are importing the raltional table format of the json data that is necessary for the exercises to be completed.
+
+![ImportOption](https://github.com/SAP-samples/teched2023-DA285v/assets/94928543/111fa716-cc0e-4a28-b6c8-aa52b3660a58)
+
+
+![StreetNetworkImportDialogue](https://github.com/SAP-samples/teched2023-DA285v/assets/94928543/2e7f6c8c-fce2-4661-b142-a84881401cf8)
+
 
 ## SAP HANA Cloud Free Tier or Trial setup
 
-Exercises 2 and 3 can be run on a SAP HANA Cloud free tier or trial system. For instructions how to set up, I recommend the tutorial [Jump Start Your SAP HANA Cloud, SAP HANA Database (free tier or trial)](https://developers.sap.com/mission.hana-cloud-database-get-started.html). To run the optional exercises 1 (Manage JSON data using the Document Store) and 2 (Utilizing machine learning), you will need a SAP HANA Cloud with more memory/vCPU assigned. Make sure to enable the **Script Server** and **Document Store**. Refer to
+Exercises 2 and 3 can be run on a SAP HANA Cloud free tier or trial system. For instructions how to set up, I recommend the tutorial [Jump Start Your SAP HANA Cloud, SAP HANA Database (free tier or trial)](https://developers.sap.com/mission.hana-cloud-database-get-started.html). To run the optional exercises 1 (Manage JSON data using the Document Store) and 4 (Utilizing machine learning), you will need a SAP HANA Cloud with more memory/vCPU assigned. Make sure to enable the **Script Server** and **Document Store**. Refer to
 * [SAP HANA Database Additional Features](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/sap-hana-database-additional-features) and
 * [Create an SAP HANA Database Instance Using SAP HANA Cloud Central](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/create-sap-hana-database-instance-using-sap-hana-cloud-central) for in general.
 
