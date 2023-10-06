@@ -15,7 +15,7 @@ For a detailed description and videos of the demo scenario, please see the blog 
 
 For each exercise, there is a detailed description of the SQL commands and processing steps. A condensed version, i.e. the code only, can also be found in each of the exercises' folder. YOu can simply copy or open the code into a SQL editor (SAP HANA Cloud Database Explorer or DBeaver) and execut. The required data in form of SAP HANA database table export is located in the [data folder](../../data/) of this repository. See [Import Data into SAP HANA Cloud, SAP HANA Database](https://developers.sap.com/tutorials/hana-cloud-mission-trial-5.html) to learn how to upload the data.
 
-Since, exercises 1 and 4 cannot be successfully completed on the SAP HANA Cloud free trial version(refer to next section for more details), to compensate the fact of not being able to download and work with json document, we hereby provide an option for the participants to import the 'STREET_NETWORK.tar.gz' dirently into their free trial instance. By doing this, you are importing the raltional table format of the json data that is necessary for the exercises to be completed.
+Since, exercises 1 and 4 cannot be successfully completed on the SAP HANA Cloud free trial version(refer to next section for more details), to compensate the fact of not being able to download and work with json document, we hereby provide an option for the participants to import the 'STREET_NETWORK.tar.gz' directly into their free trial instance. By doing this, you are importing the raltional table format of the json data that is necessary for the exercises to be completed.
 
 ![ImportOption](https://github.com/SAP-samples/teched2023-DA285v/assets/94928543/111fa716-cc0e-4a28-b6c8-aa52b3660a58)
 
