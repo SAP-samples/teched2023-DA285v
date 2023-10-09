@@ -1,10 +1,14 @@
 /********************************/
--- Ex 2
--- Make sure you've imported the charging stations data
--- 1 either by using the Jupyter Notebook 
--- 2 or the SAP HANA Cloud Database Explorer
+-- Exercise 2 - Work with Spatial Data
+/********************************/
+-- Create a schema for the data (if you haven't already done so in exercise 1).
+CREATE SCHEMA "DAT285";
+-- The geometries of the building structures are defined in a spatial reference system.
+-- We need to make SAP HANA aware of the spatial reference system.
+CREATE PREDEFINED SPATIAL REFERENCE SYSTEM IDENTIFIED BY 4269;
 
--- Make sure you've imported the building structures data
+/********************************/
+-- Make sure you've imported the charging stations and the building structures data
 -- by using the SAP HANA Cloud Database Explorer 
 /********************************/
 
