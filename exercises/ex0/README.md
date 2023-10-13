@@ -17,8 +17,6 @@ For each exercise, there is a detailed description of the SQL commands and proce
 
 ![ImportOption](https://github.com/SAP-samples/teched2023-DA285v/assets/94928543/111fa716-cc0e-4a28-b6c8-aa52b3660a58)
 
-![StreetNetworkImportDialogue](https://github.com/SAP-samples/teched2023-DA285v/assets/94928543/2e7f6c8c-fce2-4661-b142-a84881401cf8)
-
 For more details see [Import Data into SAP HANA Cloud, SAP HANA Database](https://developers.sap.com/tutorials/hana-cloud-mission-trial-5.html).
 
 Exercise 1 (and 4) cannot be successfully completed on the SAP HANA Cloud free tier or trial version (refer to next section for more details). In his case you'll need to run an extra data import at the beginning of exercise 3 (importing results of exercise 1).
