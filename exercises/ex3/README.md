@@ -8,7 +8,7 @@ If you run on a SAP HANA Cloud free tier or trial system, you had to skip exerci
 
 ## Exercise 3.1 Import OSM Street Network Data<a name="31"></a>
 
-Follow the same approach described in exercise 2 and use the Database Explorer to import `STREET_NETWORK.tar-gz`. you should then see the three street network tables in the catalog browser.
+Follow the same approach described in exercise 2 and use the Database Explorer to import `STREET_NETWORK.tar.gz`. You should then see the three street network tables in the catalog browser.
 
 ![](images/tabs.png)
 
@@ -22,7 +22,9 @@ SELECT * FROM "DAT285"."STREET_NETWORK_WAY_NODES" ORDER BY "WAY_ID", "RN";
 SELECT * FROM "DAT285"."STREET_NETWORK_WAYS";
 ```
 
-We will now connect sequential pairs of way nodes to make up an edge for our graph. Technically, we will join the data from `STREET_NETWORK_WAY_NODES` to itself, using the row number sequence ("RN") in a join condition. For each pair of sequential nodes, we also create a linestring geoetry using `ST_MakeLine()`. The resulting edges data is stored in the table `STREET_NETWORK_EDGES`.
+![](images/way_nodes.png)
+
+We will now connect sequential pairs of way nodes (e.g. the first and the second in the table above) to make up an edge for our graph. Technically, we will join the data from `STREET_NETWORK_WAY_NODES` to itself, using the row number sequence ("RN") in a join condition. For each pair of sequential nodes, we also create a linestring geometry using `ST_MakeLine()`. The resulting edges are stored in the table `STREET_NETWORK_EDGES`.
 
 ```SQL
 -- Create edges from the waypoints
@@ -53,7 +55,7 @@ WITH "CANDIDATES" AS (
 SELECT * FROM "DAT285"."STREET_NETWORK_EDGES" ORDER BY "WAY_ID";
 ```
 
-If we look at the edges of a way, the linestring geometries make up a street. Notice that some of the vertices are just there to bend the street around a curve - they are not real raod intersections. We'll remove these vertices in a later step.
+If we look at the edges of a way, the linestring geometries make up a street. Notice that some of the vertices are just there to bend the street around a curve - they are not real road intersections. We'll remove these vertices in a "simplification" step.
 
 ![](images/way.png)
 
@@ -74,7 +76,7 @@ CREATE OR REPLACE VIEW "DAT285"."V_STREET_NETWORK_VERTICES" AS (
 );
 ```
 
-Simply put, we can remove all vertices from our street network that do not belong to two or more ways, i.e. vertices which are not intersections/junctions. The vertices which belong to just one way, are used only to bend the street around a curve. By removing the unneccessary vertices we will not change the general topology of the network.
+To simplify the network, we remove all vertices from the street network that do not belong to two or more ways, i.e. vertices which are not intersections/junctions. The vertices which belong to just one way, are used only to bend the street around a curve. By removing the unneccessary vertices we will not change the general topology of the network.
 
 So, let's start and calculate the number of distinct ways a node belongs to.
 
@@ -85,7 +87,7 @@ SELECT "NODE_ID", COUNT(DISTINCT "WAY_ID") AS "WAYS"
 	ORDER BY "WAYS" DESC;
 ```
 
-Some of the node belong to 6 different ways/streets.
+Some of the nodes belong to 6 different ways/streets.
 
 ![](images/ways.png)
 
@@ -101,6 +103,20 @@ MERGE INTO "DAT285"."STREET_NETWORK_VERTICES" AS G USING
 ```
 
 Next, we will create a table to store the simplified edges and insert data from the "simplification" query. The basic logic of the query is to keep just these nodes of a way which are either start or end node of a way, or which are junctions. These nodes are marked with 'start', 'end', or 'inter'. The way segments between 'start' and 'inter', 'inter' and 'inter, and 'inter' and 'end' are enumerated with a "SEG"ment counter. A new linsestring is generated using `ST_MakeLineAggr()` on points making up a segment. And finally, the segments and the waypoints are joined.
+
+The "CANDIDATES" defined the SQL statement of the "Simplification query" below yields the data structure on which subsequent operations are based. Let's take a look at this intermediate data structure.
+
+![](images/segment.png)
+We see
+- WAY_ID 11177303 is comprises 8 nodes
+- NODE_ID 99471674 is the start node of the way
+    -  it joins 3 ways
+- NODE_ID 99471676 is an intermediate node
+    - it joins 2 ways
+- NODE_ID99471678 is an end node
+    - it is a dead end
+
+All other nodes of this way are neither junction, nor the start of end of this way. These nodes can be removed.
 
 ```SQL
 -- Create a table to store the new, simplified edges
@@ -143,11 +159,11 @@ SELECT N1."WAY_ID", N1."NODE_ID" AS "SOURCE", N2."NODE_ID" AS "TARGET",
 ;
 ```
 
-The following map illustrates the approach. The red nodes are removed during simplification, leaving only the green nodes (the road junctions). The simplified edges are now running between green nodes.
+The following map provides a visual illustration of the approach. The red nodes are removed during simplification, leaving only the green nodes (road junctions, start or end nodes). The simplified edges are running between green nodes.
 
 ![](images/simplified.png)
 
-If we compare the size of our data, we see a substantial reduction of complexity. Way 991152375 comprises 123 edges originally. After simplification, there are two edges left. Again, without changing the topology of or network.
+If we evaluate our network, we see a substantial reduction of complexity. Way 991152375 - the black line below - comprises 123 edges originally (between the red nodes). After simplification, there are two edges left (between the green nodes). Again, without changing the topology of or network.
 
 ```SQL
 SELECT * FROM "DAT285"."STREET_NETWORK_EDGES" WHERE "WAY_ID" = 991152375;
@@ -184,7 +200,7 @@ SELECT COUNT(*) FROM "DAT285"."V_STREET_NETWORK_EDGES";
 SELECT COUNT(*) FROM "DAT285"."V_STREET_NETWORK_EDGES_SIMPLIFIED";
 ```
 
-The last four statements reveal the total complexity reduction.
+The last four statements above reveal the total complexity reduction.
 - number of vertices is down to 38k (from 150k)
 - number of edges is down to 50k (from 160k)
 
