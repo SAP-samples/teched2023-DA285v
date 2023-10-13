@@ -19,7 +19,7 @@ For each exercise, there is a detailed description of the SQL commands and proce
 
 For more details see [Import Data into SAP HANA Cloud, SAP HANA Database](https://developers.sap.com/tutorials/hana-cloud-mission-trial-5.html).
 
-Exercise 1 (and 4) cannot be successfully completed on the SAP HANA Cloud free tier or trial version (refer to next section for more details). In his case you'll need to run an extra data import at the beginning of exercise 3 (importing results of exercise 1).
+Exercise 1 (and 4) cannot be successfully completed on the SAP HANA Cloud free tier or trial version (refer to next section for more details). In this case you'll need to run an extra data import at the beginning of exercise 3 (importing results of exercise 1).
 
 
 ## SAP HANA Cloud Free Tier or Trial setup
