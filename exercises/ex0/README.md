@@ -13,14 +13,15 @@ For a detailed description and videos of the demo scenario, please see the blog 
 
 ## Working with the Exercise Scripts
 
-For each exercise, there is a detailed description of the SQL commands and processing steps. A condensed version, i.e. the code only, can also be found in each of the exercises' folder. YOu can simply copy or open the code into a SQL editor (SAP HANA Cloud Database Explorer or DBeaver) and execut. The required data in form of SAP HANA database table export is located in the [data folder](../../data/) of this repository. See [Import Data into SAP HANA Cloud, SAP HANA Database](https://developers.sap.com/tutorials/hana-cloud-mission-trial-5.html) to learn how to upload the data.
-
-Since, exercises 1 and 4 cannot be successfully completed on the SAP HANA Cloud free trial version(refer to next section for more details), to compensate the fact of not being able to download and work with json document, we hereby provide an option for the participants to import the 'STREET_NETWORK.tar.gz' directly into their free trial instance. By doing this, you are importing the raltional table format of the json data that is necessary for the exercises to be completed.
+For each exercise, there is a detailed description of the SQL commands and processing steps. A condensed version, i.e. the code only, can also be found in each of the exercises' folder. You can simply copy or open the code into a SQL editor (SAP HANA Cloud Database Explorer or DBeaver) and execute. The required data in form of SAP HANA database table export is located in the [data folder](../../data/) of this repository. Data import can be handle via the Database Explorer.
 
 ![ImportOption](https://github.com/SAP-samples/teched2023-DA285v/assets/94928543/111fa716-cc0e-4a28-b6c8-aa52b3660a58)
 
-
 ![StreetNetworkImportDialogue](https://github.com/SAP-samples/teched2023-DA285v/assets/94928543/2e7f6c8c-fce2-4661-b142-a84881401cf8)
+
+For more details see [Import Data into SAP HANA Cloud, SAP HANA Database](https://developers.sap.com/tutorials/hana-cloud-mission-trial-5.html).
+
+Exercise 1 (and 4) cannot be successfully completed on the SAP HANA Cloud free tier or trial version (refer to next section for more details). In his case you'll need to run an extra data import at the beginning of exercise 3 (importing results of exercise 1).
 
 
 ## SAP HANA Cloud Free Tier or Trial setup
@@ -43,7 +44,6 @@ The **SAP HANA Database Explorer** provides an SQL editor, table viewer, and dat
 **QGIS**<a name="qgis"><br>an open source Geographical Information System (GIS). QGIS can connect to SAP HANA and provides great tools for advanced maps. Again, read Mathias' blog to [get it up and running](https://blogs.sap.com/2021/03/01/creating-a-playground-for-spatial-analytics/).
 
 **hana-ml**, the Jupyter Notebook to load JSON data into the document store (exercise 1) uses the python machine learning client for SAP HANA. There is a lot more in hana-ml for the data scientist - see [pypi.org](https://pypi.org/project/hana-ml/) and [hana-ml reference](https://help.sap.com/doc/1d0ebfe5e8dd44d09606814d83308d4b/latest/en-US/index.html).
-
 
 
 ##  Background Material
