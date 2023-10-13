@@ -1,13 +1,16 @@
 /********************************/
--- Ex 3
+-- Exercise 2 - Analyze Networks
+/********************************/
 -- Make sure you've imported the street network data
 -- 1 either by using the Jupyter Notebook and running Ex 1 
--- 2 or the SAP HANA Cloud Database Explorer
+-- 2 or by using the SAP HANA Cloud Database Explorer import
 
 /********************************/
+-- Inspect the data
 SELECT * FROM "DAT285"."STREET_NETWORK_VERTICES";
-SELECT * FROM "DAT285"."STREET_NETWORK_WAYS";
 SELECT * FROM "DAT285"."STREET_NETWORK_WAY_NODES" ORDER BY "WAY_ID", "RN";
+SELECT * FROM "DAT285"."STREET_NETWORK_WAYS";
+
 
 /********************************/
 -- Create edges from the waypoints
@@ -21,11 +24,10 @@ CREATE TABLE "DAT285"."STREET_NETWORK_EDGES"(
 	"LENGTH" DOUBLE
 );
 
-	
 INSERT INTO "DAT285"."STREET_NETWORK_EDGES" ("WAY_ID", "SOURCE", "TARGET", "SHAPE_4326", "SHAPE_3857", "LENGTH")
 WITH "CANDIDATES" AS (
 	SELECT N.*, GEOM."POINT_4326", GEOM."POINT_3857"
-		FROM "DAT285"."STREET_NETWORK_WAY_NODES" AS N -- the way nodes ARE ordered BY ROW number
+		FROM "DAT285"."STREET_NETWORK_WAY_NODES" AS N -- the way nodes are ordered by ROW NUMBER RN
 		LEFT JOIN "DAT285"."STREET_NETWORK_VERTICES" AS GEOM ON N.NODE_ID = GEOM.NODE_ID -- the street vertices contain the geometry
 	)
 	SELECT N1."WAY_ID" AS "WAY_ID", N1."NODE_ID" AS "SOURCE", N2."NODE_ID" AS "TARGET", 
@@ -33,10 +35,10 @@ WITH "CANDIDATES" AS (
 		ST_MAKELINE(N1."POINT_3857", N2."POINT_3857") AS "SHAPE_3857",
 		ST_MAKELINE(N1."POINT_3857", N2."POINT_3857").ST_LENGTH('meter') AS "LENGTH"
 		FROM "CANDIDATES" AS N1
-		INNER JOIN "CANDIDATES" AS N2 ON N1."WAY_ID" = N2."WAY_ID" AND N1.RN + 1 = N2.RN -- joining the candidates WITH itself
+		INNER JOIN "CANDIDATES" AS N2 ON N1."WAY_ID" = N2."WAY_ID" AND N1.RN + 1 = N2.RN -- joining the candidates wiht themselves using the row number
 		ORDER BY "WAY_ID";
 
-SELECT * FROM "DAT285"."STREET_NETWORK_EDGES"; 
+SELECT * FROM "DAT285"."STREET_NETWORK_EDGES" ORDER BY "WAY_ID"; 
 
 -- Adding additional attributes to the edges
 CREATE OR REPLACE VIEW "DAT285"."V_STREET_NETWORK_EDGES" AS ( 	
@@ -55,19 +57,21 @@ CREATE OR REPLACE VIEW "DAT285"."V_STREET_NETWORK_VERTICES" AS (
 
 
 /********************************/
--- simplification
--- identify the nodes that belong to two or more ways. these are the relevant nodes on which to split the ways to make edges
-SELECT NODE_ID, COUNT(DISTINCT WAY_ID) AS "WAYS" 
+-- Simplification
+-- Identify nodes that belong to two or more ways. These are the relevant nodes on which to split the ways to make simplified edges
+SELECT "NODE_ID", COUNT(DISTINCT "WAY_ID") AS "WAYS" 
 	FROM "DAT285"."STREET_NETWORK_WAY_NODES" 
-	GROUP BY NODE_ID 
+	GROUP BY "NODE_ID"
 	ORDER BY "WAYS" DESC;
--- persist
+	
+-- Persist the data in the vertices table
 ALTER TABLE "DAT285"."STREET_NETWORK_VERTICES" ADD ("NO_WAYS" INT);
 MERGE INTO "DAT285"."STREET_NETWORK_VERTICES" AS G USING
 	(SELECT NODE_ID, COUNT(DISTINCT WAY_ID) AS "NO_WAYS" FROM "DAT285"."STREET_NETWORK_WAY_NODES" GROUP BY NODE_ID) AS N
 	ON G.NODE_ID = N.NODE_ID
 	WHEN MATCHED THEN UPDATE SET G.NO_WAYS = N.NO_WAYS;
 
+-- Create a table to store the new, simplified edges
 CREATE TABLE "DAT285"."STREET_NETWORK_EDGES_SIMPLIFIED"(
 	"EDGE_ID" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	"WAY_ID" BIGINT,
@@ -78,7 +82,7 @@ CREATE TABLE "DAT285"."STREET_NETWORK_EDGES_SIMPLIFIED"(
 	"LENGTH" DOUBLE
 );
 
--- 
+-- Simplification query
 INSERT INTO "DAT285"."STREET_NETWORK_EDGES_SIMPLIFIED" ("WAY_ID", "SOURCE", "TARGET", "SHAPE_4326", "SHAPE_3857", "LENGTH")
 WITH "CANDIDATES" AS (
 	SELECT *, COUNT("SEGMENT_MARKER") OVER (PARTITION BY "WAY_ID" ORDER BY RN ASC) AS "SEG" FROM (
@@ -107,23 +111,26 @@ SELECT N1."WAY_ID", N1."NODE_ID" AS "SOURCE", N2."NODE_ID" AS "TARGET",
 ;
 
 SELECT * FROM "DAT285"."STREET_NETWORK_EDGES_SIMPLIFIED";
-SELECT * FROM "DAT285"."STREET_NETWORK_EDGES_SIMPLIFIED" WHERE "WAY_ID" = 991152375;
-SELECT * FROM "DAT285"."STREET_NETWORK_EDGES" WHERE "WAY_ID" = 991152375;
 
--- add a flag if node appears in the edges_simplified table
+-- Compare the edges
+SELECT * FROM "DAT285"."STREET_NETWORK_EDGES" WHERE "WAY_ID" = 991152375;
+SELECT * FROM "DAT285"."STREET_NETWORK_EDGES_SIMPLIFIED" WHERE "WAY_ID" = 991152375;
+
+
+-- Add a flag if node appears in the edges_simplified table
 ALTER TABLE "DAT285"."STREET_NETWORK_VERTICES" ADD("EDGE_SIMPLIFIED_RELEVANT" BOOLEAN DEFAULT FALSE);
 UPDATE "DAT285"."STREET_NETWORK_VERTICES"
 	SET "EDGE_SIMPLIFIED_RELEVANT" = TRUE 
 	WHERE NODE_ID IN (SELECT "SOURCE" FROM "DAT285"."STREET_NETWORK_EDGES_SIMPLIFIED")
 		OR NODE_ID IN (SELECT "TARGET" FROM "DAT285"."STREET_NETWORK_EDGES_SIMPLIFIED");
 
--- 
+-- create a simplified edges view
 CREATE OR REPLACE VIEW "DAT285"."V_STREET_NETWORK_EDGES_SIMPLIFIED" AS ( 	
 	SELECT E."EDGE_ID", E."SOURCE", E."TARGET", E."WAY_ID", E."SHAPE_4326", E."SHAPE_3857", E."LENGTH", W."TYPE", W."HW", W."NAME", W."ONEWAY", W."MAXSPEED"
 	FROM "DAT285"."STREET_NETWORK_EDGES_SIMPLIFIED" AS E
 	LEFT JOIN "DAT285"."STREET_NETWORK_WAYS" AS W ON E."WAY_ID" = W."WAY_ID"
 );
-
+-- create a simplified vertices view
 CREATE OR REPLACE VIEW "DAT285"."V_STREET_NETWORK_VERTICES_SIMPLIFIED" AS (
 	SELECT * FROM "DAT285"."STREET_NETWORK_VERTICES" 
 	WHERE "EDGE_SIMPLIFIED_RELEVANT" = TRUE 
@@ -137,7 +144,7 @@ SELECT COUNT(*) FROM "DAT285"."V_STREET_NETWORK_EDGES_SIMPLIFIED";
 
 
 /*************************/
--- simplified graph
+-- Simplified graph
 /*************************/
 CREATE OR REPLACE GRAPH WORKSPACE "DAT285"."STREET_NETWORK_GRAPH_SIMPLIFIED"
 	EDGE TABLE "DAT285"."V_STREET_NETWORK_EDGES_SIMPLIFIED"
@@ -154,22 +161,20 @@ CREATE OR REPLACE GRAPH WORKSPACE "DAT285"."STREET_NETWORK_GRAPH_SIMPLIFIED"
 /*************************/
 SELECT "LENGTH" FROM "DAT285"."STREET_NETWORK_EDGES_SIMPLIFIED" ORDER BY "LENGTH" DESC;
 
--- community detection on streets
+-- Create a GraphScript procedure to run Louvain community detection
 CREATE OR REPLACE PROCEDURE "DAT285"."GS_COMMUNITY" (
 	OUT o_res TABLE("NODE_ID" BIGINT, "COMM" BIGINT)
 )
 LANGUAGE GRAPH READS SQL DATA AS
 BEGIN
 	Graph g = Graph("DAT285","STREET_NETWORK_GRAPH_SIMPLIFIED");
-	--SEQUENCE<MULTISET<VERTEX>> communities = COMMUNITIES_LOUVAIN(:g, 1, (Edge e) => DOUBLE{ return 8400.0-:e."LENGTH"; } );
 	SEQUENCE<MULTISET<VERTEX>> communities = COMMUNITIES_LOUVAIN(:g, 1, (Edge e) => DOUBLE{ return 1.0 - :e."LENGTH"/8400.0; } );
 	MAP<VERTEX, BIGINT> communityMap = TO_ORDINALITY_MAP(:communities);
 	o_res = SELECT :v."NODE_ID", :communityMap[:v] FOREACH v in VERTICES(:g);
 END;
 CALL "DAT285"."GS_COMMUNITY"(?);
 
-
--- store the community information in the vertex table
+-- Add the community information to the vertex table
 ALTER TABLE "DAT285"."STREET_NETWORK_VERTICES" ADD ("COMM" BIGINT);
 DO()
 BEGIN
@@ -185,14 +190,14 @@ CREATE OR REPLACE VIEW "DAT285"."V_STREET_NETWORK_VERTICES_SIMPLIFIED" AS (
 	WHERE "EDGE_SIMPLIFIED_RELEVANT" = TRUE 
 );
 
-
+-- How many communities are in our street network?
 SELECT COUNT(DISTINCT "COMM") FROM "DAT285"."V_STREET_NETWORK_VERTICES_SIMPLIFIED";
-
+-- what's the size of the communities?
 SELECT "COMM", COUNT(*) AS C 
 	FROM "DAT285"."V_STREET_NETWORK_VERTICES_SIMPLIFIED"
 	GROUP BY "COMM" ORDER BY C DESC;
 
--- persist communities
+-- Persist communities Voronois
 SELECT "COMM", ST_UNIONAGGR("VC") AS "SHAPE_3857" FROM (
 	SELECT "COMM", ST_VoronoiCell("POINT_3857", -5) OVER() AS VC
 	FROM "DAT285"."V_STREET_NETWORK_VERTICES_SIMPLIFIED"

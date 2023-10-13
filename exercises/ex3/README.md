@@ -24,7 +24,7 @@ SELECT * FROM "DAT285"."STREET_NETWORK_WAYS";
 
 ![](images/way_nodes.png)
 
-We will now connect sequential pairs of way nodes (e.g. the first and the second in the table above) to make up an edge for our graph. Technically, we will join the data from `STREET_NETWORK_WAY_NODES` to itself, using the row number sequence ("RN") in a join condition. For each pair of sequential nodes, we also create a linestring geometry using `ST_MakeLine()`. The resulting edges are stored in the table `STREET_NETWORK_EDGES`.
+We will now connect sequential pairs of way nodes (e.g. the first and the second row in the table above) to make up an edge for our graph. Technically, we will join the data from `STREET_NETWORK_WAY_NODES` to itself, using the row number sequence ("RN") in a join condition. For each pair of sequential nodes, we also create a linestring geometry using `ST_MakeLine()`. The resulting edges are stored in the table `STREET_NETWORK_EDGES`.
 
 ```SQL
 -- Create edges from the waypoints
@@ -87,7 +87,7 @@ SELECT "NODE_ID", COUNT(DISTINCT "WAY_ID") AS "WAYS"
 	ORDER BY "WAYS" DESC;
 ```
 
-Some of the nodes belong to 6 different ways/streets.
+Some of the nodes belong to or join 6 different ways/streets.
 
 ![](images/ways.png)
 
@@ -220,7 +220,7 @@ CREATE OR REPLACE GRAPH WORKSPACE "DAT285"."STREET_NETWORK_GRAPH_SIMPLIFIED"
 
 The `GRAPH WORKSPACE` is required to run GraphScript procedures on your network. We want to identify communities in the street network. The below procedure runs the ["Louvain"](https://en.wikipedia.org/wiki/Louvain_method) algorithm that optimizes modularity. Simply put, it identifies partitions in which the vertices within one partition are well connected (many edges), but vertices of different partitions are less so.
 
-The below script first calculated the maximum length of the edges (8382m). We use this value to define the edge "weight" (1.0 - "LENGTH"/8400.0), which is used in the `COMMUNITIES_LOUVAIN` algorithm of the `GS_COMMUNITY` procedure. The procedure map each vertex to a community and returns the result in table format.
+The below script first calculated the maximum length of the edges (8382m). We use this value to define the edge "weight" (1.0 - "LENGTH"/8400.0), which is used in the `COMMUNITIES_LOUVAIN` algorithm of the `GS_COMMUNITY` procedure. The procedure maps each vertex to a community and returns the result in table format.
 Each vertex' community is added to the `STREET_NETWORK_VERTICES` table.
 
 
