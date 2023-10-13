@@ -73,7 +73,7 @@ This is the result.
 
 ![](images/hex.png)
 
-## Exercise 2.2 Analysis of building structures data
+## Exercise 2.2 Analysis of building structures data<a name="22"></a>
 
 Noew, let's swtich to the `STRUCTURES` table. You can double-click a the "geom" value to view the building structure footprint on a map.
 
@@ -198,7 +198,7 @@ SELECT "SHAPE_3857",
 
 ![](images/dist.png)
 
-## Exercise 2.3 Calculate spatial features from building structres
+## Exercise 2.3 Calculate spatial features from building structres<a name="23"></a>
 
 In this exercise we will use the building structures data to derive location characteristics which we can use in classic machine learning tasks like clustering and classification. We will first generate a hexagon grid that covers our area of interest. For each grid cell, we look at the buildings and sum up their area. This allows us to calculate the ratio of the covered area by occupancy class to the total building area.
 

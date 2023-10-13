@@ -21,11 +21,12 @@ The requirements to follow the exercises in this repository are
 
 - [Getting Started](exercises/ex0/)
 - [Exercise 1 - Manage JSON Data](exercises/ex1/)
-    - [Exercise 1.1 - Importing OpenStreetMap Street Network Data](exercises/ex1#11)
-    - [Exercise 1.1 - Inspect, Query, and Transform JSON Data](exercises/ex1#12)
-- [Exercise 2 - Work with Spatial Data](exercises/ex2/)
-    - [Exercise 2.1 - Exercise 2 Sub Exercise 1 Description](exercises/ex2#exercise-21-sub-exercise-1-description)
-    - [Exercise 2.2 - Exercise 2 Sub Exercise 2 Description](exercises/ex2#exercise-22-sub-exercise-2-description)
+    - [Exercise 1.1 - Importing OpenStreetMap street network data](exercises/ex1#11)
+    - [Exercise 1.1 - Inspect, query, and transform JSON data](exercises/ex1#12)
+- [Exercise 2 - Work with spatial data](exercises/ex2/)
+    - [Exercise 2.1 Analysis of charging stations point data](exercises/ex2#21)
+    - [Exercise 2.2 Analysis of building structures data](exercises/ex2#2)
+    - [Exercise 2.3 Calculate spatial features from building structres](exercises/ex2#23)
 - [Exercise 3 - Analyze Networks](exercises/ex3/)
 - [Exercise 4 - Utilize Machine Learning](exercises/ex4/)
   
