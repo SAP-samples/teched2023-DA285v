@@ -129,9 +129,143 @@ SELECT
 
 ![](images/result2.png)
 
+The above statement converts the saptial column only. There are also formats that comprise the non-spatial attributes - EsriJSON and GeoJSON.
+
+```SQL
+WITH DAT AS (
+	SELECT TO_INT("id") AS "ID", "occ_cls" AS "OCC_CLS", "SHAPE_3857" FROM "DAT285"."STRUCTURES" LIMIT 10
+	)
+SELECT 
+	ST_AsEsriJSON("ID", "OCC_CLS", "SHAPE_3857".ST_TRANSFORM(4326) AS "SHAPE_4326", object_id_name => 'ID', coordinate_precision => 6, format => 'COMPACT') AS ESRI_JSON,
+	ST_AsGeoJSON("ID", "OCC_CLS", "SHAPE_3857".ST_TRANSFORM(4326) AS "SHAPE_4326", feature_id_name => 'ID', coordinate_precision => 6, format => 'COMPACT') AS GEO_JSON
+	FROM DAT;
+```
+
+For EsriJSON the result looks like this.
+
+```JSON
+{
+"objectIdFieldName": "ID", 
+"geometryType": "esriGeometryPolygon", 
+"spatialReference": {"wkid": 4326}, 
+"fieldAliases": {"ID": "ID", "OCC_CLS": "OCC_CLS"}, 
+"fields": [
+{"name": "ID", "type": "esriFieldTypeOID", "alias": "ID"}, 
+{"name": "OCC_CLS", "type": "esriFieldTypeString", "alias": "OCC_CLS", "length": 20}
+], 
+"features": [
+{"geometry": {"rings": [[[-81.492649, 28.461183], [-81.492602, 28.46131], [-81.492482, 28.461276], [-81.492528, 28.461148], [-81.492649, 28.461183]]]}, "attributes": {"ID": 17679, "OCC_CLS": "Residential"}}, ...
+```
+
+Next, let's take a look at method that generate new geometries. We will generate a 20 m buffer around the building structures using `ST_Buffer()` and calculate the centroid of the polygon via `ST_Centroid()`.
+
+```SQL
+SELECT 
+	"SHAPE_3857", 
+	"SHAPE_3857".ST_Buffer(20, 'meter') AS "BUFFER", 
+	"SHAPE_3857".ST_Centroid() AS "CENTROID" 
+	FROM "DAT285"."STRUCTURES" LIMIT 100;
+```
+
+In DBX, you can mark multiple values and click on the view spatial data button to bring up a map. The yellow area is the 20 m buffer, the point marker indicates the building's centroid.
+
+![](images/buffer.png)
+![](images/buffer2.png)
+
+Next, we will calulate [Voronoi cells](https://en.wikipedia.org/wiki/Voronoi_diagram) based on the centroids.
+Each polygon consists of all points that are closer to its seed (the centroid) than to any other.
+
+```SQL
+WITH DAT AS (
+	SELECT "SHAPE_3857", "SHAPE_3857".ST_Centroid() AS "CENTROID" FROM "DAT285"."STRUCTURES" LIMIT 50
+	)
+SELECT "SHAPE_3857", "CENTROID", ST_VoronoiCell("CENTROID", 5) OVER () AS "V_CELL" 
+	FROM DAT;
+```
+
+![](images/vcells.png)
+
+At last, we will run a calculation method: `ST_Distance`. Using the statement below, point P is generated and the top 100 closest buildings returned.
+
+```SQL
+SELECT "SHAPE_3857", 
+	ST_GeomFromWKT('POINT (-9071710.86541748 3307249.678466797)', 3857) AS P,
+	"SHAPE_3857".ST_Distance(ST_GeomFromWKT('POINT (-9071710.86541748 3307249.678466797)', 3857)) AS "DIST"
+	FROM "DAT285"."STRUCTURES" 
+	ORDER BY DIST ASC 
+	LIMIT 100;
+```
+
+![](images/dist.png)
+
+## Exercise 2.3 Calculate spatial features from building structres
+
+In this exercise we will use the building structures data to derive location characteristics which we can use in classic machine learning tasks like clustering and classification. We will first generate a hexagon grid that covers our area of interest. For each grid cell, we look at the buildings and sum up their area. This allows us to calculate the ratio of the covered area by occupancy class to the total building area.
+
+So, let's first get the total extent of our building structures data. We use `ST_EnvelopeAggr()` method to derive the bounding rectangle and then extract the minimum and maximum of the X and Y coordinate of the rectangle. The coordinates are then used to generate a line from the "lower left" to the "upper right" corner of the rectangle.
+
+```SQL
+SELECT "P1".ST_MAKELINE("P2").ST_ASEWKT() AS "LINE_3857", 
+	"P1".ST_MAKELINE("P2").ST_TRANSFORM(4326).ST_ASEWKT() AS "LINE_4326", 
+	"ENV".ST_ASEWKT() AS "RECT_3857", 
+	ENV.ST_TRANSFORM(4326).ST_ASEWKT() AS "RECT_4326" FROM (
+		SELECT NEW ST_POINT("ENV".ST_XMIN(), "ENV".ST_YMIN(), 3857) AS "P1", NEW ST_POINT("ENV".ST_XMAX(), "ENV".ST_YMAX(), 3857) AS "P2", "ENV" FROM (
+			SELECT ST_EnvelopeAggr("SHAPE_3857") AS "ENV" FROM "DAT285"."STRUCTURES"
+	)
+);
+```
+
+We can now take the value of "LINE_3857" to generate a hexagon grid that coveres our area of interest. The `ST_HexagonGrid()` generation function returns the cluster cell's polygon as well as the centroid. The query is wrapped in a view so we can use it in subsequent calculation.
+
+```SQL
+CREATE OR REPLACE VIEW "DAT285"."V_GRID" AS
+	SELECT "I"||'#'||"J" AS "ID", "GEOM" AS "CLUSTER_CELL", GEOM.ST_CENTROID() AS "CENTROID" 
+		FROM ST_HexagonGrid(
+			500, 
+			'VERTICAL', 
+			ST_GEOMFROMEWKT('SRID=3857;LINESTRING (-9077450.8667 3295104.0223,-9045772.999 3328301.14435)')
+		);
+
+SELECT * FROM "DAT285"."V_GRID";
+```
+
+![](images/grid.png)
+
+We can now identify the structures that intersect with the grid cells and calculate the intersections and the area of the buildings that are inside the grid cell.
+
+```SQL
+SELECT GRI."ID", "CLUSTER_CELL", STRU."id" AS "STRUCTURE_ID", 
+	GRI."CLUSTER_CELL".ST_INTERSECTION(STRU."SHAPE_3857") AS "INTERSECTION", 
+	GRI."CLUSTER_CELL".ST_INTERSECTION(STRU."SHAPE_3857").ST_AREA() AS "AREA", 
+	STRU."occ_cls" AS "FEATURE"
+	FROM "DAT285"."V_GRID" AS GRI
+	INNER JOIN "DAT285"."STRUCTURES" AS STRU ON STRU."SHAPE_3857".ST_INTERSECTS(GRI."CLUSTER_CELL") = 1
+	WHERE GRI."ID" = '-12079#3828';
+```
+
+For the grid cell with the ID '-12079#3828', we see that 1261 m2 of the commercial building structure 140698 is inside the grid cell.
+
+![](images/intersection.png)
+
+We can now wrap this calculation in a view and use some window functions to get the totals for each grid cell. Looking at the result, we see that grid cell '-12061#3805' covers three types of building structures:
+- educational buildings cover ~1.600 m2
+- commercial buildings cover ~3.400 m2
+- residential buildings cover ~58.000 m2
+
+This sums up to ~63.000 m2 of building structure area in that cell. The last column contains the total area of structures by occupancy class for the whole dataset.
+
+![](images/ratios.png)
+
+Since the above query takes a couple of seconds to run, we will persist the results in a table. This data will be used in exercise 4 for landuse clustering.
+
+```SQL
+CREATE TABLE "DAT285"."T_GRID_FEATURES_STRUCTURE_OCCCLS" AS (
+	SELECT * FROM "DAT285"."V_GRID_FEATURES_STRUCTURE_OCCCLS"
+);
+```
 
 ## Summary
 
-You've now ...
+We have seen how to work with spatial data - points and polygons - and how tu run some basic spatial queries, including transformation and calulation methods.
 
 Continue to - [Exercise 3 - Analyze Networks](../ex3/README.md)
