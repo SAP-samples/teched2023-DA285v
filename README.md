@@ -25,7 +25,7 @@ The requirements to follow the exercises in this repository are
     - [Exercise 1.1 - Inspect, query, and transform JSON data](exercises/ex1#12)
 - [Exercise 2 - Work with spatial data](exercises/ex2/)
     - [Exercise 2.1 Analysis of charging stations point data](exercises/ex2#21)
-    - [Exercise 2.2 Analysis of building structures data](exercises/ex2#2)
+    - [Exercise 2.2 Analysis of building structures data](exercises/ex2#22)
     - [Exercise 2.3 Calculate spatial features from building structres](exercises/ex2#23)
 - [Exercise 3 - Analyze Networks](exercises/ex3/)
 - [Exercise 4 - Utilize Machine Learning](exercises/ex4/)
