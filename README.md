@@ -4,7 +4,7 @@
 
 ## Description
 
-This repository contains the material for the SAP TechEd 2023 session DAT185v - Building Intelligent Data Applications with SAP HANA Cloud.  
+This repository contains the material for the SAP TechEd 2023 session DAT285v - Building Intelligent Data Applications with SAP HANA Cloud.  
 
 ## Overview
 
