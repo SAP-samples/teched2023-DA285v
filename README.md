@@ -1,6 +1,6 @@
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/teched2023-DA285v)](https://api.reuse.software/info/github.com/SAP-samples/teched2023-DA285v)
 
-# DAT185v - Building Intelligent Data Applications with SAP HANA Cloud
+# DAT285v - Building Intelligent Data Applications with SAP HANA Cloud
 
 ## Description
 
