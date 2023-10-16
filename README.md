@@ -32,6 +32,8 @@ The requirements to follow the exercises in this repository are
     - [Exercise 3.2 Simplify the Data and create a Graph from OSM Street Network Data](exercises/ex3#32)
     - [Exercise 3.3 Network Analysis - Community Detection](exercises/ex3#33)
 - [Exercise 4 - Utilize Machine Learning](exercises/ex4/)
+    - [Exercise 4.1 Prepare Data](exercises/ex4#41)
+    - [Exercise 4.1 Run K Means](exercises/ex4#42)
   
 ## Contributing
 Please read the [CONTRIBUTING.md](./CONTRIBUTING.md) to understand the contribution guidelines.
