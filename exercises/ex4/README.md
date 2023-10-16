@@ -4,7 +4,7 @@ This exercise is optional. It requires a SAP HANA Cloud system with the **Script
 
 In this exercise, we will use basic ML features to derive landuse classification.
 
-At the end of [Exercise 2.3 Calculate spatial features from building structres](exercises/ex2#23), we calculated the building structures area by occupancy class for each hexagon grid cell.
+At the end of [Exercise 2.3 Calculate spatial features from building structres](../ex2#23), we calculated the building structures area by occupancy class for each hexagon grid cell.
 
 ![](images/ratios.png)
 
