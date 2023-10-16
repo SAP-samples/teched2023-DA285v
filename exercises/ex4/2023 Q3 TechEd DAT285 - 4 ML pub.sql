@@ -11,7 +11,8 @@
 -- Landuse classification
 -- 1 We used a hexagon grid to tesselate our area
 -- 2 For each hex cell we calculated the areas of the different building types
--- 3 Then, we run k means clustering to derive landuse clusters
+-- 3 Then, we run k-means clustering to derive landuse clusters
+
 /************************************/
 -- This is the data we generated in exercise 2
 -- For each hexagon grid cell, we calulated the covered area by building accupancy class
@@ -19,7 +20,7 @@ SELECT * FROM "DAT285"."T_GRID_FEATURES_STRUCTURE_OCCCLS" ORDER BY "ID";
 
 
 /*******************************/
--- We will use the Predictive Analysis Library (PAL) to run kmeans clustering
+-- We will use the Predictive Analysis Library (PAL) to run k-means clustering
 -- PAL requires some metadata, i.e. list of features used in the model
 CREATE OR REPLACE VIEW "DAT285"."PAL_METADATA_FOR_STRUC_CLUSTERING" AS (
 	SELECT DISTINCT "FEATURE", 'CONTINUOUS' AS "FEATURE_TYPE" 
@@ -64,12 +65,10 @@ INSERT INTO "DAT285"."PAL_PARAMS_FOR_STRUC_CLUSTERING" VALUES ('TOL', NULL, 1.0E
 
 
 /*******************************/
--- Call the UNIFIED_CLUSTERING algoithm on pivoted data, and store the results in table:
+-- Call the UNIFIED_CLUSTERING algorithm on pivoted data, and store the results in tables:
 -- "DAT285"."PAL_LANDUSE_STRUC_RESULT"
 -- "DAT285"."PAL_LANDUSE_STRUC_CENTERS"
 
---DROP TABLE "DAT285"."PAL_LANDUSE_STRUC_RESULT";
---DROP TABLE "DAT285"."PAL_LANDUSE_STRUC_CENTERS";
 DO BEGIN
 	meta_data_tab = SELECT * FROM "DAT285"."PAL_METADATA_FOR_STRUC_CLUSTERING";
 	data_tab = SELECT * FROM "DAT285"."PAL_DATA_FOR_STRUC_CLUSTERING"; 

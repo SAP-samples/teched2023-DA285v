@@ -8,13 +8,13 @@ At the end of [Exercise 2.3 Calculate spatial features from building structres](
 
 ![](images/ratios.png)
 
-Now, we use the Predictive Analysis Library (PAL) to run k means clustering on this raw data. The result is a set of clusters, in which areas with similar landuse characteristics (=occupany class distibution) are grouped.
+Now, we use the Predictive Analysis Library (PAL) to run k-means clustering on this raw data. The result is a set of clusters, in which areas with similar landuse characteristics (=occupany class distibution) are grouped.
 
 
 
 ## Exercise 4.1 Prepare data<a name="41"></a>
 
-To run a PAL algorithm, we need to prepare some metadata and configuration parameters. The metadata tells the algoithm which features to use, the configuration provides a handle on partially optional algorithm parameters.
+To run a PAL algorithm, we need to prepare some metadata and configuration parameters. The metadata tells the algoithm which features to use, the configuration provides a handle on (partially optional) algorithm parameters.
 
 First, we just expose all features in our raw data via a SQL view.
 ```SQL
@@ -43,14 +43,14 @@ CREATE OR REPLACE VIEW "DAT285"."PAL_DATA_FOR_STRUC_CLUSTERING" AS (
 SELECT * FROM "DAT285"."PAL_DATA_FOR_STRUC_CLUSTERING" ORDER BY "ID" DESC, "FEATURE";
 ```
 
-The grid cell with "ID" = '-12103#3842' doesn't contain agricultural buildings, just assemplies, commercial, governmental, and residential buildings.
+As can be seen below, grid cell '-12103#3842' doesn't contain agricultural buildings, just assemplies, commercial, governmental, and residential buildings.
 
 ![](images/dataxfeatures.png)
 
 Next, we create a table that holds the configuration parameters for our PAL procedure. See [Unified Clustering with Pivoted Input Data](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-predictive-analysis-library/unified-clustering-with-pivoted-input-data?version=2022_3_QRC) for details.
 
 ```SQL
--- Parameter table to configure the k means algorithm
+-- Parameter table to configure the k-means algorithm
 CREATE COLUMN TABLE "DAT285"."PAL_PARAMS_FOR_STRUC_CLUSTERING" (
 	"NAME" VARCHAR (50),
 	"INT_VALUE" INTEGER,
@@ -69,9 +69,9 @@ INSERT INTO "DAT285"."PAL_PARAMS_FOR_STRUC_CLUSTERING" VALUES ('MAX_ITER', 100, 
 INSERT INTO "DAT285"."PAL_PARAMS_FOR_STRUC_CLUSTERING" VALUES ('TOL', NULL, 1.0E-6, NULL); 
 ```
 
-## Exercise 4.2 Run PAL KMEANS<a name="42"></a>
+## Exercise 4.2 Run PAL K-Means<a name="42"></a>
 
-Now, we call the PAL procedure providing metadata, data, and configuraiton, and store the results in two tables: `PAL_LANDUSE_STRUC_RESULT` and `PAL_LANDUSE_STRUC_CENTERS`.
+Now, we call the PAL procedure providing metadata, data, and configuration and store the results in two tables: `PAL_LANDUSE_STRUC_RESULT` and `PAL_LANDUSE_STRUC_CENTERS`.
 
 ```SQL
 DO BEGIN
@@ -100,11 +100,11 @@ SELECT "CLUSTER_ID", COUNT(*) AS C
 	ORDER BY "CLUSTER_ID";
 ```
 
-.. we see that we found 7 clusters of which the largest (CLUSTER_ID" = 0) contains 1047 grid cells.
+.. we see 7 clusters of which the largest (CLUSTER_ID" = 0) contains 1047 grid cells.
 
 ![](images/cluster_sizes.png)
 
-Next, we will generate cluster description based on the centers. We just concatenate the top 3 occupancy classes and their values.
+Next, we will generate cluster descriptions based on the centers. We just concatenate the top 3 occupancy classes and their values.
 
 ```SQL
 -- Generate cluster descriptions
@@ -124,7 +124,7 @@ Cluster 0 can be described as primarily residential plus a some comercial buildi
 
 ![](images/center_descr.png)
 
-Finally, we ceate a SQL viewfor visualization which combines the grid polygons, the cluster assignment, and the descriptions.
+Next, let's ceate a SQL view for visualization which combines the grid polygons, the cluster assignment, and the descriptions.
 
 ```SQL
 -- Generate a result view for visualization
@@ -142,11 +142,11 @@ We can now bring the data from this view onto a map in QGIS and see primarily co
 
 ![](images/landuse.png)
 
-Finally, we can overlay the electriv vehicles charging stations to see that they are mainly located in commercial areas.
+Finally, we can overlay the electric vehicles charging stations to see that they are mainly located in commercial areas.
 
 ![](images/ev.png)
 
 ## Summary
 
-We have used spatial features derived from building structures in a simple PAL k means algorithm and derived landuse classes.
+We have used spatial features derived from building structures in a simple PAL k-means algorithm and derived landuse classes.
 

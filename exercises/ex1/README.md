@@ -13,7 +13,7 @@ CREATE SCHEMA "DAT285";
 ```
 ![](./images/DBX.png)
 
-Now open the Jupyter Notebook [2023 Q3 TechEd DAT285 OSM load.ipynb](2023%20Q3%20TechEd%20DAT285%20OSM%20load.ipynb) and make sure you have installed pandas, hana-ml, and requests.
+Now open the Jupyter Notebook [2023 Q3 TechEd DAT285 OSM load.ipynb](2023%20Q3%20TechEd%20DAT285%20OSM%20load.ipynb) and make sure you have `pandas`, `hana-ml`, and `requests` installed.
 
 ```python
 # Import required libraries
@@ -47,7 +47,7 @@ print('HANA version:', cc.hana_version())
 print('hana-ml version:', hana_ml.__version__)
 print('pandas version:', pd.__version__)
 ```
-We'll use the [overpass turbo API](https://overpass-turbo.eu/) to retriev data from OSM.
+We'll use the [overpass turbo API](https://overpass-turbo.eu/) to retrieve data from OSM.
 ```python
 # All car ways
 # way["highway"]["area"!~"yes"]["highway"!~"abandoned|bridleway|bus_guideway|construction|corridor|cycleway|elevator|escalator|footway|path|pedestrian|planned|platform|proposed|raceway|service|steps|track"]["motor_vehicle"!~"no"]["motorcar"!~"no"]["service"!~"alley|driveway|emergency_access|parking|parking_aisle|private"]
@@ -66,7 +66,7 @@ overpass_url = "http://overpass-api.de/api/interpreter"
 response = requests.get(overpass_url, params={'data': overpass_query})
 data = response.json()
 ```
-We use `create_collection_from_elemets` to store the data in SAP HANA Cloud JSON Document Store.
+We use hte function `create_collection_from_elemets` to store the data in SAP HANA Cloud JSON Document Store.
 ```python
 # The overpass API resturns JSON which we can store in the SAP HANA Document Store.
 from hana_ml.docstore import create_collection_from_elements
@@ -104,7 +104,13 @@ SELECT "type", "tags"."highway", COUNT(*) AS C
 	FROM "DAT285"."C_STREET_NETWORK" 
 	GROUP BY "type", "tags"."highway" 
 	ORDER BY C DESC;
+```
 
+There are `nodes` and `ways` in the data. The `ways` are street segments and the `nodes` are junctions.
+
+![](images/query.png)
+
+```SQL
 -- The "ways" contain an array of "nodes", e.g. "nodes": [99549558,1029814722,8502705960,1700923338]
 -- We can unnest this array.
 SELECT "type", "id", "tags"."name", NODE 
@@ -114,7 +120,11 @@ SELECT "type", "id", "tags"."name", NODE
 	LIMIT 100;
 ```
 
-Next, we will extract the nodes and ways from the JSON collection and populate three tables: `STREET_NETWORK_VERTICES`, `STREET_NETWORK_WAYS`, and `STREET_NETWORK_WAY_NODES`. These tables will be used in exercise 3 to run network analysis using the SAP HANA Cloud Graph Engine.
+The `ways` contain an array of `nodes` which we can unnest with the following query.
+
+![](images/ways.png)
+
+Next, we will extract the nodes and ways from the JSON collection and populate three tables: `STREET_NETWORK_VERTICES`, `STREET_NETWORK_WAYS`, and `STREET_NETWORK_WAY_NODES`. These tables will be used in exercise 3 to run network analysis using the SAP HANA Cloud Graph engine.
 
 ```SQL
 /********************************/
@@ -179,7 +189,7 @@ This gives us a table with an ordered set of nodes which make up a way.
 
 ## Summary
 
-You've retieved street network data from OSM using python, stored the data in a JSON collection, and transformed the data using SQL into relational tables.
+You've retrieved street network data from OSM using python, stored the data in a JSON collection, and transformed the data using SQL into relational tables.
 
 Continue to - [Exercise 2 - Work with Spatial Data](../ex2/README.md)
 

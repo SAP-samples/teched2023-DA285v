@@ -1,7 +1,7 @@
 # Exercise 2 - Work with Spatial Data
 
 In this exercise, we will analyse building structures and charging stations.
-The building structures are sourced from the [FEMA Geospatial Ressource Center](https://gis-fema.hub.arcgis.com/pages/usa-structures) which provide geopackage files which can be opened in [QGIS](https://blogs.sap.com/2021/03/01/creating-a-playground-for-spatial-analytics/) and drag-and-dropped into SAP HANA. The charging station data is provided by the [National Renewable Energy Laboratory](https://www.nrel.gov/) as csv download or via an API.
+The building structures are sourced from the [FEMA Geospatial Ressource Center](https://gis-fema.hub.arcgis.com/pages/usa-structures) which provides geopackage files which can be opened in [QGIS](https://blogs.sap.com/2021/03/01/creating-a-playground-for-spatial-analytics/) and drag-and-dropped into SAP HANA. The charging station data is provided by the [National Renewable Energy Laboratory](https://www.nrel.gov/) as csv download or via an API.
 
 For convenience, HANA table exports can be found in the [data folder](../../data/).
 
@@ -104,7 +104,7 @@ There are about 15k commercial buildings in the dataset.
 
 ![](images/occdistr.png)
 
-Let's explore some spatial methods. We start with some "inspection" methods. The following statement show the geometry type, the spatial reference system of the spatial data, and the area of the building structure polygons.
+Let's explore some spatial methods. We start with some "inspection" methods. The following statement shows the geometry type, the spatial reference system of the spatial data, and the area of the building structure polygons.
 
 ```SQL
 SELECT 
@@ -158,7 +158,7 @@ For EsriJSON the result looks like this. Note that besides that actual geometry,
 {"geometry": {"rings": [[[-81.492649, 28.461183], [-81.492602, 28.46131], [-81.492482, 28.461276], [-81.492528, 28.461148], [-81.492649, 28.461183]]]}, "attributes": {"ID": 17679, "OCC_CLS": "Residential"}}, ...
 ```
 
-Next, let's take a look at method that "generate" new geometries. We will generate a 20 m buffer around the building structures using `ST_Buffer()` and calculate the centroid of the polygon via `ST_Centroid()`.
+Next, let's take a look at methods that "generate" new geometries. We will generate a 20 m buffer around the building structures using `ST_Buffer()` and calculate the centroid of the building polygon via `ST_Centroid()`.
 
 ```SQL
 SELECT 
@@ -174,7 +174,7 @@ In DBX, you can mark multiple values and click on the view spatial data button t
 ![](images/buffer2.png)
 
 Next, we will calulate [Voronoi cells](https://en.wikipedia.org/wiki/Voronoi_diagram) based on the centroids.
-Each resulting polygon consists of all points that are closer to its seed (the centroid) than to any other.
+Each resulting (yellow) polygon consists of all points that are closer to its seed (the centroid) than to any other.
 
 ```SQL
 WITH DAT AS (
@@ -216,6 +216,10 @@ SELECT "P1".ST_MAKELINE("P2").ST_ASEWKT() AS "LINE_3857",
 );
 ```
 
+Below we see the bounding rectangle (yellow) and the diagonal line (blue).
+
+![](images/rect.png)
+
 We can now take the value of "LINE_3857" to generate a hexagon grid that coveres our area of interest. The `ST_HexagonGrid()` generation function returns the cluster cell's polygon as well as the centroid. The query is wrapped in a view so we can use it in subsequent calculations.
 
 ```SQL
@@ -244,16 +248,16 @@ SELECT GRI."ID", "CLUSTER_CELL", STRU."id" AS "STRUCTURE_ID",
 	WHERE GRI."ID" = '-12079#3828';
 ```
 
-For the grid cell with the ID '-12079#3828', we see that 1261 m2 of the commercial building structure 140698 is inside the grid cell.
+For the grid cell with the ID '-12079#3828', we see that 1261 square meters of the commercial building structure 140698 is inside the grid cell.
 
 ![](images/intersection.png)
 
-We can now wrap this calculation in a view and use some window functions to get the totals for each grid cell. Looking at the result, we see that grid cell '-12061#3805' covers three types of building structures:
+Let's wrap this calculation in a view and use some window functions to get the totals for each grid cell. Looking at the result, we see that grid cell '-12061#3805' covers three types of building structures:
 - educational buildings cover ~1.600 m2
 - commercial buildings cover ~3.400 m2
 - residential buildings cover ~58.000 m2
 
-This sums up to ~63.000 m2 of building structure area in that cell. The last column contains the total area of structures by occupancy class for the whole dataset. This data describes a "usage type" of the individual areas. We see grid cells that mainly contain commercial buildings, and cells that have a high share of residential structures. This data can be use to derive landuse classes, which is what we'll do in exercise 4.
+This sums up to ~63.000 m2 of building structure area in that cell. The last column contains the total area of structures by occupancy class for the whole dataset. This data describes a "usage type" of the individual areas. We see grid cells that mainly contain commercial buildings, and cells that have a high share of residential structures. This data can be use to derive landuse classes - which is what we'll do in exercise 4.
 
 ![](images/ratios.png)
 
@@ -267,6 +271,6 @@ CREATE TABLE "DAT285"."T_GRID_FEATURES_STRUCTURE_OCCCLS" AS (
 
 ## Summary
 
-We have seen how to work with spatial data - points and polygons - and how tu run some basic spatial queries, including transformation and calulation methods.
+We have seen how to work with spatial data - points and polygons - and how to run some basic spatial queries, including transformation and calulation methods.
 
 Continue to - [Exercise 3 - Analyze Networks](../ex3/README.md)

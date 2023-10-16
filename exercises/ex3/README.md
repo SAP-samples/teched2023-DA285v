@@ -8,7 +8,7 @@ If you run on a SAP HANA Cloud free tier or trial system, you had to skip exerci
 
 ## Exercise 3.1 Import OSM Street Network Data<a name="31"></a>
 
-Follow the same approach described in exercise 2 and use the Database Explorer to import `STREET_NETWORK.tar.gz`. You should then see the three street network tables in the catalog browser.
+Follow the same approach described in exercise 2 and use the Database Explorer to import `STREET_NETWORK.tar.gz` which is found in the [data folder](../../data/). You should then see the three street network tables in the catalog browser.
 
 ![](images/tabs.png)
 
