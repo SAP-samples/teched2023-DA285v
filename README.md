@@ -1,10 +1,10 @@
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/teched2023-DA285v)](https://api.reuse.software/info/github.com/SAP-samples/teched2023-DA285v)
 
-# DAT185v - Building Intelligent Data Applications with SAP HANA Cloud
+# DAT285v - Building Intelligent Data Applications with SAP HANA Cloud
 
 ## Description
 
-This repository contains the material for the SAP TechEd 2023 session DAT185v - Building Intelligent Data Applications with SAP HANA Cloud.  
+This repository contains the material for the SAP TechEd 2023 session DAT285v - Building Intelligent Data Applications with SAP HANA Cloud.  
 
 ## Overview
 
