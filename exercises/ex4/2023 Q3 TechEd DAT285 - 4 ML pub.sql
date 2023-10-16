@@ -1,7 +1,11 @@
 /********************************/
--- Ex 4
--- Make sure you've run ex 2 
+-- Exercise 4 - Utilize Machine Learning
 /********************************/
+
+/************************************/
+-- Prerequisite:
+-- Make sure you have completed exercise 2 (Work with Spatial Data)
+/************************************/
 
 /************************************/
 -- Landuse classification
@@ -9,12 +13,14 @@
 -- 2 For each hex cell we calculated the areas of the different building types
 -- 3 Then, we run k means clustering to derive landuse clusters
 /************************************/
--- This is the view we built in U1
+-- This is the data we generated in exercise 2
+-- For each hexagon grid cell, we calulated the covered area by building accupancy class
 SELECT * FROM "DAT285"."T_GRID_FEATURES_STRUCTURE_OCCCLS" ORDER BY "ID";
 
 
 /*******************************/
--- metadata, ie list of features used in the model
+-- We will use the Predictive Analysis Library (PAL) to run kmeans clustering
+-- PAL requires some metadata, i.e. list of features used in the model
 CREATE OR REPLACE VIEW "DAT285"."PAL_METADATA_FOR_STRUC_CLUSTERING" AS (
 	SELECT DISTINCT "FEATURE", 'CONTINUOUS' AS "FEATURE_TYPE" 
 		FROM "DAT285"."V_GRID_FEATURES_STRUCTURE_OCCCLS" 
@@ -23,7 +29,7 @@ SELECT * FROM "DAT285"."PAL_METADATA_FOR_STRUC_CLUSTERING";
 
 
 /*******************************/
--- data x features
+-- We now join the data with the features (occupancy classes) and assign the value 0 if the class is not present
 CREATE OR REPLACE VIEW "DAT285"."PAL_DATA_FOR_STRUC_CLUSTERING" AS (
 	SELECT TO_NVARCHAR("ID") AS "ID", "FEATURE", TO_NVARCHAR("VALUE") AS "VALUE", 1 AS "PURPOSE" FROM (
 		SELECT OBJ."ID", FEAT."FEATURE", COALESCE(OBS."SUM_AREA"/OBS."SUM_AREA_IN_CELL", 0) AS "VALUE" 
@@ -37,7 +43,6 @@ SELECT * FROM "DAT285"."PAL_DATA_FOR_STRUC_CLUSTERING" ORDER BY "ID" DESC, "FEAT
 
 /*******************************/
 -- Parameter table to configure the k means algorithm
-DROP TABLE "DAT285"."PAL_PARAMS_FOR_STRUC_CLUSTERING"; 
 CREATE COLUMN TABLE "DAT285"."PAL_PARAMS_FOR_STRUC_CLUSTERING" (
 	"NAME" VARCHAR (50),
 	"INT_VALUE" INTEGER,
@@ -59,9 +64,12 @@ INSERT INTO "DAT285"."PAL_PARAMS_FOR_STRUC_CLUSTERING" VALUES ('TOL', NULL, 1.0E
 
 
 /*******************************/
--- RUN
-DROP TABLE "DAT285"."PAL_LANDUSE_STRUC_RESULT";
-DROP TABLE "DAT285"."PAL_LANDUSE_STRUC_CENTERS";
+-- Call the UNIFIED_CLUSTERING algoithm on pivoted data, and store the results in table:
+-- "DAT285"."PAL_LANDUSE_STRUC_RESULT"
+-- "DAT285"."PAL_LANDUSE_STRUC_CENTERS"
+
+--DROP TABLE "DAT285"."PAL_LANDUSE_STRUC_RESULT";
+--DROP TABLE "DAT285"."PAL_LANDUSE_STRUC_CENTERS";
 DO BEGIN
 	meta_data_tab = SELECT * FROM "DAT285"."PAL_METADATA_FOR_STRUC_CLUSTERING";
 	data_tab = SELECT * FROM "DAT285"."PAL_DATA_FOR_STRUC_CLUSTERING"; 
@@ -75,13 +83,17 @@ END;
 
 
 /***************************/
--- Inspect clusters
+-- Inspect the clusters
+SELECT * FROM "DAT285"."PAL_LANDUSE_STRUC_RESULT";
+SELECT * FROM "DAT285"."PAL_LANDUSE_STRUC_CENTERS";
+
 -- Cluster sizes
 SELECT "CLUSTER_ID", COUNT(*) AS C 
 	FROM "DAT285"."PAL_LANDUSE_STRUC_RESULT" 
 	GROUP BY "CLUSTER_ID"
 	ORDER BY "CLUSTER_ID";
--- Cluster descriptions
+
+-- Generate cluster descriptions
 CREATE OR REPLACE VIEW "DAT285"."PAL_LANDUSE_STRUCTURE_CLUSTER_DESCRIPTION" AS (
 	SELECT "CLUSTER_ID", STRING_AGG("FEATURE"||' ('||ROUND("VALUE", 3)||')', '; ') AS "DESCRIPTION" 
 		FROM (
