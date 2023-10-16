@@ -12,7 +12,7 @@ Now, we use the Predictive Analysis Library (PAL) to run k means clustering on t
 
 
 
-## Exercise 4.1 Prepare data
+## Exercise 4.1 Prepare data<a name="41"></a>
 
 To run a PAL algorithm, we need to prepare some metadata and configuration parameters. The metadata tells the algoithm which features to use, the configuration provides a handle on partially optional algorithm parameters.
 
@@ -69,7 +69,7 @@ INSERT INTO "DAT285"."PAL_PARAMS_FOR_STRUC_CLUSTERING" VALUES ('MAX_ITER', 100, 
 INSERT INTO "DAT285"."PAL_PARAMS_FOR_STRUC_CLUSTERING" VALUES ('TOL', NULL, 1.0E-6, NULL); 
 ```
 
-## Exercise 4.2 Run PAL KMEANS
+## Exercise 4.2 Run PAL KMEANS<a name="42"></a>
 
 Now, we call the PAL procedure providing metadata, data, and configuraiton, and store the results in two tables: `PAL_LANDUSE_STRUC_RESULT` and `PAL_LANDUSE_STRUC_CENTERS`.
 
