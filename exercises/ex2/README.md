@@ -207,10 +207,10 @@ In this exercise we will use the building structures data to derive location cha
 So, let's first get the total extent of our building structures data. We use `ST_EnvelopeAggr()` method to derive the bounding rectangle and then extract the minimum and maximum of the X and Y coordinate of the rectangle. The coordinates are then used to generate a line from the "lower left" to the "upper right" corner of the rectangle.
 
 ```SQL
-SELECT "P1".ST_MAKELINE("P2").ST_ASEWKT() AS "LINE_3857", 
-	"P1".ST_MAKELINE("P2").ST_TRANSFORM(4326).ST_ASEWKT() AS "LINE_4326", 
-	"ENV".ST_ASEWKT() AS "RECT_3857", 
-	ENV.ST_TRANSFORM(4326).ST_ASEWKT() AS "RECT_4326" FROM (
+SELECT "P1".ST_MAKELINE("P2") AS "LINE_3857", 
+	"P1".ST_MAKELINE("P2").ST_TRANSFORM(4326) AS "LINE_4326", 
+	"ENV" AS "RECT_3857", 
+	ENV.ST_TRANSFORM(4326) AS "RECT_4326" FROM (
 		SELECT NEW ST_POINT("ENV".ST_XMIN(), "ENV".ST_YMIN(), 3857) AS "P1", NEW ST_POINT("ENV".ST_XMAX(), "ENV".ST_YMAX(), 3857) AS "P2", "ENV" FROM (
 			SELECT ST_EnvelopeAggr("SHAPE_3857") AS "ENV" FROM "DAT285"."STRUCTURES"
 	)
