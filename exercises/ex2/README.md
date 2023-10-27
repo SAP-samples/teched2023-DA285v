@@ -68,6 +68,7 @@ CREATE OR REPLACE VIEW "DAT285"."V_CHARGING_STATIONS_HEX_CLUSTER" AS (
 SELECT ST_ClusterID() AS "LOCATION_ID", ST_ClusterCell() AS "CCELL", COUNT(*) AS "NUM_STATIONS"
 	FROM "DAT285"."CHARGING_STATIONS"
 	GROUP CLUSTER BY "POINT_3857" USING HEXAGON X CELLS 500
+)
 ```
 
 Again, we bring the view into QGIS and add some layer styling to color code the cluster cells by the number of charging stations. Note that since the clusters are exposed by a view (`V_CHARGING_STATIONS_HEX_CLUSTER`) we can easily make changes to the grid resolution by changing the configuraiton of the `X CELLS` value, e.g. from 500 -> 700. These changes are then immediatelly reflected in the QGIS fontend.
