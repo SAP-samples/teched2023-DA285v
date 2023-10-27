@@ -253,7 +253,31 @@ For the grid cell with the ID '-12079#3828', we see that 1261 square meters of t
 
 ![](images/intersection.png)
 
-Let's wrap this calculation in a view and use some window functions to get the totals for each grid cell. Looking at the result, we see that grid cell '-12061#3805' covers three types of building structures:
+Let's wrap this calculation in a view and use some window functions to get the totals for each grid cell.
+
+```SQL
+CREATE OR REPLACE VIEW "DAT285"."V_GRID_FEATURES_STRUCTURE_OCCCLS" AS ( 
+	SELECT 'grid' AS "TYPE", "ID", "CLUSTER_CELL", 'structure' AS "FEATURE_TYPE", "FEATURE", "SUM_AREA",
+		SUM("CNT") OVER(PARTITION BY "ID") AS "#FEATURES_IN_CELL",
+		SUM("SUM_AREA") OVER(PARTITION BY "ID") AS "SUM_AREA_IN_CELL",
+		SUM("SUM_AREA") OVER(PARTITION BY "FEATURE") AS "SUM_AREA_OF_FEATURE",
+		SUM("CNT") OVER(PARTITION BY "FEATURE") AS "#CELLS_OF_FEATURE"
+		FROM (
+			SELECT "ID", "CLUSTER_CELL", "FEATURE", SUM("AREA") AS "SUM_AREA", 1 AS "CNT"
+				FROM (
+					SELECT GRI."ID", "CLUSTER_CELL", STRU."id" AS "STRUCTURE_ID", "CLUSTER_CELL".ST_INTERSECTION("SHAPE_3857").ST_AREA() AS "AREA",	"occ_cls" AS "FEATURE"
+						FROM "DAT285"."V_GRID" AS GRI
+						INNER JOIN "DAT285"."STRUCTURES" AS STRU ON STRU."SHAPE_3857".ST_INTERSECTS(GRI."CLUSTER_CELL") = 1
+				)
+				GROUP BY "ID", "CLUSTER_CELL", "FEATURE"
+		)
+);
+
+SELECT "ID", "FEATURE", "SUM_AREA", "#FEATURES_IN_CELL", "SUM_AREA_IN_CELL", "SUM_AREA_OF_FEATURE"
+	FROM "DAT285"."V_GRID_FEATURES_STRUCTURE_OCCCLS" ORDER BY "ID", "SUM_AREA";
+```
+
+Looking at the result, we see that grid cell '-12061#3805' covers three types of building structures:
 - educational buildings cover ~1.600 m2
 - commercial buildings cover ~3.400 m2
 - residential buildings cover ~58.000 m2
