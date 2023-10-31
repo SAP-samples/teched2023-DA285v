@@ -13,7 +13,7 @@ This session introduces SAP HANA Cloud Multi-Model capabilities - Document Store
 ## Requirements
 
 The requirements to follow the exercises in this repository are
-<li>SAP HANA Cloud (SAP HANA Cloud free tier or trial will work for for exercises 2 + 3 only)
+<li>SAP HANA Cloud (SAP HANA Cloud free tier or trial will work for exercises 2 + 3 only)
 <li>SAP HANA Database Explorer (or DBeaver)
 <li>QGIS (optionally)
 
