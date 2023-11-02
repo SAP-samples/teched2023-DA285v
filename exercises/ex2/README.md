@@ -237,7 +237,9 @@ SELECT * FROM "DAT285"."V_GRID";
 
 ![](images/grid.png)
 
-We can now identify the structures that intersect with the grid cells and calculate the intersections and the area of the buildings that are inside the grid cell.
+We can now identify the structures that intersect with the grid cells and calculate the intersections and the area of the buildings that are inside the grid cell. This map depicts the idea.
+
+![](images/qgis_intersections.png)
 
 ```SQL
 SELECT GRI."ID", "CLUSTER_CELL", STRU."id" AS "STRUCTURE_ID", 
