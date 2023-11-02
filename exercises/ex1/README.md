@@ -68,7 +68,7 @@ overpass_url = "http://overpass-api.de/api/interpreter"
 response = requests.get(overpass_url, params={'data': overpass_query})
 data = response.json()
 ```
-We use hte function `create_collection_from_elemets` to store the data in SAP HANA Cloud JSON Document Store.
+We use the function `create_collection_from_elemets` to store the data in SAP HANA Cloud JSON Document Store.
 ```python
 # The overpass API resturns JSON which we can store in the SAP HANA Document Store.
 from hana_ml.docstore import create_collection_from_elements
