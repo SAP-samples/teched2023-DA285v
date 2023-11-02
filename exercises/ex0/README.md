@@ -5,7 +5,7 @@ This section should give you an understanding of the base scenario and data. Add
 
 ## Base Data & Demo Scenario
 
-During the exercises, we will work with data describing building structures, electric vehicle charging stations, and the road network in the Orlando, Florida area. We will walk through some building blocks that make of the "EV Charging Stations site Selection" demo.
+During the exercises, we will work with data describing building structures, electric vehicle charging stations, and the road network in the Orlando, Florida area. We will walk through some building blocks that make up the "EV Charging Stations site Selection" demo.
 For a detailed description and videos of the demo scenario, please see the blog post [Optimal Electric Vehicle Charging Station Placement – An Intelligent Data Application Demo](https://blogs.sap.com/2023/05/15/optimal-electronic-vehicle-charging-station-placement-an-intelligent-data-application-demo/).
 
 ![](images/demo_screenshot.png)
