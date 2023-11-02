@@ -1,6 +1,8 @@
 # Exercise 1 - Manage JSON Data
 
-This exercise is optional. It requires a Python environment and SAP HANA Cloud system with the **JSON Document Server** enabled. If you have a SAP HANA Cloud trial or free tier, skip this exercise.
+This exercise is optional. It requires a Python environment and SAP HANA Cloud system with the **JSON Document Store** enabled. See [SAP HANA Cloud Free Tier or Trial setup](../ex0/README.md#sap-hana-cloud-free-tier-or-trial-setup).
+
+If you have a SAP HANA Cloud trial or free tier, skip this exercise.
 
 In this exercise, we will use the SAP HANA Cloud JSON Document Store and the [Python machine learning client for SAP HANA](https://pypi.org/project/hana-ml/) (hana-ml) to retrieve street network data from [OpenStreetMap](https://www.openstreetmap.org) and store JSON data in the database.
 
